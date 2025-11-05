@@ -27,5 +27,4 @@ clean:
 
 # Test target
 test: $(LIB)
-	@mkdir -p test
 	$(CC) $(CFLAGS) $(TEST_SRC) -L$(OBJDIR) -lterminalgfx -o $(TEST_BIN)
