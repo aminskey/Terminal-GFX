@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "terminalgfx.h"
+#include <terminalgfx.h>
 
 int main() {
     tgfx_init();

@@ -14,6 +14,7 @@
 #define tgfx_wsize wsize()
 
 // Initialization & Shutdown
+void tgfx_settings_init();
 void tgfx_init();
 void tgfx_terminate();
 
@@ -35,6 +36,8 @@ void tgfx_tick(int);
 // Input
 void tgfx_startInput();
 void tgfx_closeInput();
+void tgfx_input_init();
+void tgfx_input_terminate();
 int  tgfx_readInput(int);
 
 // Frame buffer
