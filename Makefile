@@ -27,4 +27,4 @@ clean:
 
 # Test target
 test: $(LIB)
-	$(CC) $(CFLAGS) $(TEST_SRC) -L$(OBJDIR) -lterminalgfx -o $(TEST_BIN)
+	$(CC) $(CFLAGS) -g $(TEST_SRC) -L$(OBJDIR) -lterminalgfx -o $(TEST_BIN)

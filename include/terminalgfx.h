@@ -2,6 +2,8 @@
 #define TERMINALGFX_H
 
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdint.h>
 
 // defining arbitrary values for key-inputs
 
@@ -47,6 +49,9 @@ void tgfx_fb_clear(char);
 void tgfx_fb_put(int, int, char);
 void tgfx_fb_print(int, int, const char *);
 void tgfx_fb_render();
+void tgfx_fb_box();
+
+char *utf8string(uint32_t);
 
 #endif // TERMINALGFX_H
 
