@@ -10,6 +10,9 @@
 #define TGFX_KEY_LEFT   1003
 #define TGFX_KEY_RIGHT  1004
 
+// getting window size
+#define tgfx_wsize wsize()
+
 // Initialization & Shutdown
 void tgfx_init();
 void tgfx_terminate();

@@ -8,32 +8,33 @@
 #include<signal.h>
 #include "terminalgfx.h"
 
-/* Screen control */
 #define tgfx_cls()               printf("\x1b[2J")
 #define tgfx_clfpos()            printf("\x1b[J")
-
-/* Cursor positioning */
 #define tgfx_move_cursor(y,x)    printf("\x1b[%d;%dH", (y), (x))
-
-/* Cursor visibility */
 #define tgfx_toggleCursor(on)    ((on) ? printf("\x1b[?25h") : printf("\x1b[?25l"))
-
-/* Cursor save/restore */
 #define tgfx_save_pos()          printf("\x1b[s")
 #define tgfx_mv_savedpos()       printf("\x1b[u")
 
+// Terminal settings and input variables
 static struct termios tgfx_oldt;
 static struct winsize tgfx_w;
 static pthread_mutex_t inputLock;
 static volatile int tgfx_key = 0;
 static volatile int running = 0;
 
+/*
+*
+*   INPUT BUFFER AND TERMINAL SETTINGS
+*
+*/
+// predefining handle_sigint
 static void handle_sigint(int sig);
-
 static void *inputThread(void *arg){
   while(running){
     int ch = getchar();
     pthread_mutex_lock(&inputLock);
+
+    /* Processing arrow inputs */
     if(ch == 27) if(getchar() == '[') switch((ch2 = getchar())){
       case 'A': ch = TGFX_KEY_UP;     break;
       case 'B': ch = TGFX_KEY_DOWN;   break;
@@ -96,6 +97,7 @@ void tgfx_init(){
   tgfx_toggleCursor(false);
 }
 
+struct winsize wsize(){return tgfx_w}
 
 void tgfx_startInput(){
   pthread_t t;
@@ -116,4 +118,64 @@ int tgfx_readInput(int hold){
   if(hold) tgfx_key = 0;
   pthread_mutex_unlock(&inputLock);
   return ch;
+}
+
+/*
+*
+*   OUTPUT BUFFER AND SUPPORTING FUNCTIONS
+*
+*/
+static char **tgfx_buffer = NULL;
+static int tgfx_width = 0;
+static int tgfx_height = 0;
+
+void tgfx_createBuffer(int rows, int cols) {
+  width = cols;
+  height = rows;
+  
+  tgfx_buffer = malloc(rows * sizeof(char *));
+  for(int i = 0; i < rows; i++){
+    tgfx_buffer[i] = malloc(cols * sizeof(char));
+    memset(tgfx_buffer[i], ' ', cols);
+  }
+}
+
+void tgfx_destroyBuffer(){
+  if(!tgfx_buffer) return;
+  for(int i = 0; i < tgfx_height; i++)
+    free(tgfx_buffer[i]);
+
+  free(tgfx_buffer);
+  tgfx_buffer = NULL;
+}
+
+void tgfx_clearBuffer(char v){
+  for(int i = 0; i < tgfx_height; i++) 
+    memset(tgfx_buffer[i], v, tgfx_width);
+}
+
+void tgfx_printch(int x, int y, char c){
+  // in case the coordinates are out of bounds
+  if (x < 0 || x >= tgfx_width || y < 0 || y >= tgfx_height) 
+    return;
+  tgfx_buffer[y][x] = c;
+}
+
+void tgfx_drawString(int x, int y, const char *s) {
+    int i = 0;
+    while (s[i] && (x + i) < tgfx_width) {
+        tgfx_buffer[y][x + i] = s[i];
+        i++;
+    }
+}
+
+void tgfx_render(){
+  tgfx_mv_savedpos();
+  tgfx_clfpos();
+  tgfx_mv_savedpos();
+
+  for (int i = 0; i < tgfx_height; i++){
+    write(STDOUT_FILENO, tgfx_buffer[i], tgfx_width);
+    putchar('\n');
+  }
 }
