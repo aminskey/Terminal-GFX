@@ -32,6 +32,10 @@ static void *inputThread(void *arg){
   return NULL;
 }
 
+void tgfx_input_init(){
+    pthread_mutex_init(&inputLock, NULL);
+}
+
 void tgfx_startInput(){
   pthread_t t;
   running = 1;

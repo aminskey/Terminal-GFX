@@ -42,25 +42,19 @@ void tgfx_nocbreak(){
 	tgfx_toggleCursor(true);
 }
 
-void tgfx_terminate(){
-  tgfx_closeInput();
-  pthread_mutex_destroy(&inputLock);
-  tgfx_nocbreak();
-}
 
 void handle_sigint(int sig) {
-	tgfx_terminate();
-  tgfx_mv_savedpos();
-  tgfx_clfpos();
+    tgfx_terminate();
+    tgfx_mv_savedpos();
+    tgfx_clfpos();
 	printf("\nExiting due to signal: %d\n", sig);
 	exit(EXIT_SUCCESS);
 }
 
-void tgfx_init(){
+void tgfx_settings_init(){
   ioctl(STDOUT_FILENO, TIOCGWINSZ, &tgfx_w);  // getting the window size
   tcgetattr(STDIN_FILENO, &tgfx_oldt);        // Saving the old terminal settings for later 
   signal(SIGINT, handle_sigint);              // Exit cleanly when sigerror
-  pthread_mutex_init(&inputLock, NULL);
   tgfx_cbreak();                              // start with cbreak and hide the cursor
   tgfx_toggleCursor(false);
 }
