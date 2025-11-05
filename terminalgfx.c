@@ -7,6 +7,7 @@
 #include<stdlib.h>
 #include<signal.h>
 #include "terminalgfx.h"
+#include<string.h>
 
 // Terminal settings and input variables
 static struct termios tgfx_oldt;
@@ -28,7 +29,7 @@ static void *inputThread(void *arg){
     pthread_mutex_lock(&inputLock);
 
     /* Processing arrow inputs */
-    if(ch == 27) if(getchar() == '[') switch((ch2 = getchar())){
+    if(ch == 27) if(getchar() == '[') switch(getchar()){
       case 'A': ch = TGFX_KEY_UP;     break;
       case 'B': ch = TGFX_KEY_DOWN;   break;
       case 'C': ch = TGFX_KEY_RIGHT;  break;
@@ -90,7 +91,7 @@ void tgfx_init(){
   tgfx_toggleCursor(false);
 }
 
-struct winsize wsize(){return tgfx_w}
+struct winsize wsize(){return tgfx_w;}
 
 void tgfx_startInput(){
   pthread_t t;
@@ -123,8 +124,8 @@ static int tgfx_width = 0;
 static int tgfx_height = 0;
 
 void tgfx_fb_init(int rows, int cols) {
-  width = cols;
-  height = rows;
+  tgfx_width = cols;
+  tgfx_height = rows;
   
   tgfx_buffer = malloc(rows * sizeof(char *));
   for(int i = 0; i < rows; i++){
