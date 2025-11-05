@@ -22,20 +22,28 @@ void tgfx_cbreak();
 void tgfx_nocbreak();
 
 // Drawing & Screen Control
-void tgfx_cls();
-void tgfx_move_cursor(int y, int x);
-void tgfx_toggleCursor(bool on);
-void tgfx_clfpos();
-void tgfx_save_pos();
-void tgfx_mv_savedpos();
+#define tgfx_cls()               printf("\x1b[2J")
+#define tgfx_clfpos()            printf("\x1b[J")
+#define tgfx_move_cursor(y,x)    printf("\x1b[%d;%dH", (y), (x))
+#define tgfx_toggleCursor(on)    ((on) ? printf("\x1b[?25h") : printf("\x1b[?25l"))
+#define tgfx_save_pos()          printf("\x1b[s")
+#define tgfx_mv_savedpos()       printf("\x1b[u")
 
 // Timing
-void tgfx_tick(int rate);
+void tgfx_tick(int);
 
 // Input
 void tgfx_startInput();
 void tgfx_closeInput();
-int  tgfx_readInput(int hold);
+int  tgfx_readInput(int);
+
+// Frame buffer
+void tgfx_fb_init(int, int);
+void tgfx_fb_quit();
+void tgfx_fb_clear(char);
+void tgfx_fb_put(int, int, char);
+void tgfx_fb_print(int, int, const char *);
+void tgfx_fb_render();
 
 #endif // TERMINALGFX_H
 

@@ -8,13 +8,6 @@
 #include<signal.h>
 #include "terminalgfx.h"
 
-#define tgfx_cls()               printf("\x1b[2J")
-#define tgfx_clfpos()            printf("\x1b[J")
-#define tgfx_move_cursor(y,x)    printf("\x1b[%d;%dH", (y), (x))
-#define tgfx_toggleCursor(on)    ((on) ? printf("\x1b[?25h") : printf("\x1b[?25l"))
-#define tgfx_save_pos()          printf("\x1b[s")
-#define tgfx_mv_savedpos()       printf("\x1b[u")
-
 // Terminal settings and input variables
 static struct termios tgfx_oldt;
 static struct winsize tgfx_w;
@@ -129,7 +122,7 @@ static char **tgfx_buffer = NULL;
 static int tgfx_width = 0;
 static int tgfx_height = 0;
 
-void tgfx_createBuffer(int rows, int cols) {
+void tgfx_fb_init(int rows, int cols) {
   width = cols;
   height = rows;
   
@@ -140,7 +133,7 @@ void tgfx_createBuffer(int rows, int cols) {
   }
 }
 
-void tgfx_destroyBuffer(){
+void tgfx_fb_quit(){
   if(!tgfx_buffer) return;
   for(int i = 0; i < tgfx_height; i++)
     free(tgfx_buffer[i]);
@@ -149,19 +142,19 @@ void tgfx_destroyBuffer(){
   tgfx_buffer = NULL;
 }
 
-void tgfx_clearBuffer(char v){
+void tgfx_fb_clear(char v){
   for(int i = 0; i < tgfx_height; i++) 
     memset(tgfx_buffer[i], v, tgfx_width);
 }
 
-void tgfx_printch(int x, int y, char c){
+void tgfx_fb_put(int x, int y, char c){
   // in case the coordinates are out of bounds
   if (x < 0 || x >= tgfx_width || y < 0 || y >= tgfx_height) 
     return;
   tgfx_buffer[y][x] = c;
 }
 
-void tgfx_drawString(int x, int y, const char *s) {
+void tgfx_fb_print(int x, int y, const char *s) {
     int i = 0;
     while (s[i] && (x + i) < tgfx_width) {
         tgfx_buffer[y][x + i] = s[i];
@@ -169,7 +162,7 @@ void tgfx_drawString(int x, int y, const char *s) {
     }
 }
 
-void tgfx_render(){
+void tgfx_fb_render(){
   tgfx_mv_savedpos();
   tgfx_clfpos();
   tgfx_mv_savedpos();
