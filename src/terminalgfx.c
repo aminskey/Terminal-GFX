@@ -9,6 +9,12 @@
 #include "terminalgfx.h"
 #include<string.h>
 
+/*
+*
+*   INPUT BUFFER AND TERMINAL SETTINGS
+*
+*/
+
 // Terminal settings and input variables
 static struct termios tgfx_oldt;
 static struct winsize tgfx_w;
@@ -16,11 +22,6 @@ static pthread_mutex_t inputLock;
 static volatile int tgfx_key = 0;
 static volatile int running = 0;
 
-/*
-*
-*   INPUT BUFFER AND TERMINAL SETTINGS
-*
-*/
 // predefining handle_sigint
 static void handle_sigint(int sig);
 static void *inputThread(void *arg){
