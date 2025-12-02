@@ -15,6 +15,15 @@
 // getting window size
 #define tgfx_wsize wsize()
 
+typedef struct {
+  int x;
+  int y;
+  int w;
+  int h;
+  char **img;
+} SPRITE;
+
+
 // Initialization & Shutdown
 void tgfx_settings_init();
 void tgfx_init();
