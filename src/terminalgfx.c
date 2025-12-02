@@ -11,5 +11,4 @@ void tgfx_terminate(){
     tgfx_fb_quit();
     tgfx_nocbreak();
     tgfx_mv_savedpos();
-    tgfx_cbreak();
 }
