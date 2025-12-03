@@ -10,12 +10,19 @@ static int tgfx_width = 0;
 static int tgfx_height = 0;
 SPRITE *screenBuffer = NULL;
 
+char WHITE[]={255, 255, 255};
+char BLACK[]={0, 0, 0};
+
 SPRITE *createSprite(int x, int y, int w, int h) {
   SPRITE *spt = malloc(sizeof(SPRITE));
-  spt->img = malloc(h * sizeof(char *));
+  spt->img = malloc(h * sizeof(CELL *));
   for(int i = 0; i < h; i++){
-    spt->img[i] = malloc(w * sizeof(char));
-    memset(spt->img[i], ' ', w);
+    spt->img[i] = malloc(w * sizeof(CELL));
+    for(int j = 0; j < w; j++){
+      spt->img[i][j].c = ' ',
+      memcpy(spt->img[i][j].fRGB, WHITE, 3);
+      memcpy(spt->img[i][j].bRGB, BLACK, 3);
+    }
   }
 
   spt->x = x;
@@ -29,25 +36,36 @@ SPRITE *createSprite(int x, int y, int w, int h) {
 void tgfx_fb_init(int w, int h) {
   tgfx_width = w;
   tgfx_height = h;
-  
+
   screenBuffer = createSprite(0, 0, w, h);
 }
 
 // Remember: Create a dynamic table for sprites!!
-//void kill_sprite(){}
+void kill_sprite(SPRITE **p){
+  if(!*p) return;
+  SPRITE *sp = *p;
 
-void tgfx_fb_quit(){
-  if(!screenBuffer) return;
-  for(int i = 0; i < tgfx_height; i++)
-    free(screenBuffer->img[i]);
-
-  free(screenBuffer->img);
-  free(screenBuffer);
-  screenBuffer = NULL;
+  for(int i = 0; i < sp->h ; i++){
+    free(sp->img[i]);
+  }
+  free(sp->img);
+  free(sp);
+  *p = NULL;
 }
 
-void sprite_fill(SPRITE *p, char v) {
-  for(int i = 0; i < p->h; i++) memset(p->img[i], v, p->w);
+void tgfx_fb_quit(){
+  kill_sprite(&screenBuffer);
+}
+
+
+void sprite_fill_color(SPRITE *p, char v, char*fg, char*bg) {
+  for(int i = 0; i < p->h; i++){
+    for(int j = 0; j < p->w; j++){
+      p->img[i][j].c = v;
+      memcpy(p->img[i][j].fRGB, fg, 3);
+      memcpy(p->img[i][j].bRGB, bg, 3);
+    }
+  }
 }
 
 // Just like in pygame, when blitting an image onto another
@@ -81,7 +99,7 @@ void sprite_blit(SPRITE *src, SPRITE*dest){
 
   // Blit process
   for(int i = 0; i < h; i++){
-    memcpy(dest->img[i+py]+px, src->img[i+sy]+sx, w);
+    memcpy(dest->img[i+py]+px, src->img[i+sy]+sx, sizeof(CELL)*w);
   }
 
 }
@@ -90,57 +108,49 @@ void tgfx_fb_put(int x, int y, char c){
   // in case the coordinates are out of bounds
   if (x < 0 || x >= tgfx_width || y < 0 || y >= tgfx_height) 
     return;
-  screenBuffer->img[y][x] = c;
+  screenBuffer->img[y][x].c = c;
 }
 
 void tgfx_fb_print(int x, int y, const char *s) {
     int i = 0;
     while (s[i] && (x + i) < tgfx_width) {
-        screenBuffer->img[y][x + i] = s[i];
+        screenBuffer->img[y][x + i].c = s[i];
         i++;
     }
 }
 
 void create_box(SPRITE *p){
-  memset(p->img[0], '-', p->w);
-  memset(p->img[p->h-1], '-', p->w);
+  for(int k=0; k < p->w; k++)
+    p->img[0][k].c = p->img[p->h-1][k].c = '-';
+  
   for(int i = 1; i < p->h - 1; i++){
-    p->img[i][0] = p->img[i][p->w-1] = '|'; 
+    p->img[i][0].c = p->img[i][p->w-1].c = '|'; 
   }
 
   /* Adding corners */
-  p->img[0][0] = '+';
-  p->img[0][p->w-1] = '+';
-  p->img[p->h-1][0] = '+';
-  p->img[p->h-1][p->w-1] = '+';
+  p->img[0][0].c = 
+  p->img[0][p->w-1].c =
+  p->img[p->h-1][0].c = 
+  p->img[p->h-1][p->w-1].c =
+  '+';
 }
 
 void tgfx_fb_render(){
+  //tgfx_move_cursor(screenBuffer->x, screenBuffer->y);
+
   for (int i = 0; i < tgfx_height; i++){
-    write(STDOUT_FILENO, screenBuffer->img[i], tgfx_width);
-    putchar('\n');
-  }
-}
+    for(int k = 0; k < tgfx_width; k++){
+      char *fg = screenBuffer->img[i][k].fRGB;
+      char *bg = screenBuffer->img[i][k].bRGB;
 
-char *utf8string(uint32_t codepoint) {
-    char *buf = malloc(5 * sizeof(char));
-
-    if (codepoint <= 0x7F) {
-        buf[0] = codepoint;
-    } else if (codepoint <= 0x7FF) {
-        buf[0] = 0xC0 | ((codepoint >> 6) & 0x1F);
-        buf[1] = 0x80 | (codepoint & 0x3F);
-    } else if (codepoint <= 0xFFFF) {
-        buf[0] = 0xE0 | ((codepoint >> 12) & 0x0F);
-        buf[1] = 0x80 | ((codepoint >> 6) & 0x3F);
-        buf[2] = 0x80 | (codepoint & 0x3F);
-    } else if (codepoint <= 0x10FFFF) {
-        buf[0] = 0xF0 | ((codepoint >> 18) & 0x07);
-        buf[1] = 0x80 | ((codepoint >> 12) & 0x3F);
-        buf[2] = 0x80 | ((codepoint >> 6) & 0x3F);
-        buf[3] = 0x80 | (codepoint & 0x3F);
+      printf("\x1b[38;2;%d;%d;%dm", fg[0], fg[1], fg[2]);
+      printf("\x1b[48;2;%d;%d;%dm", bg[0], bg[1], bg[2]);
+      putchar(screenBuffer->img[i][k].c);
+      printf("\x1b[0m");
     }
-
-    buf[4]='\0';
-    return buf;
+    putchar('\n');
+    fflush(stdout);
+    /*
+     *///tgfx_move_cursor(screenBuffer->x, screenBuffer->y+i);
+  }
 }

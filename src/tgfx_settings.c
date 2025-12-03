@@ -42,7 +42,6 @@ void tgfx_nocbreak(){
 	tgfx_toggleCursor(true);
 }
 
-
 void handle_sigint(int sig) {
   tgfx_terminate();
   tgfx_cls();
