@@ -8,7 +8,7 @@
 //static char **tgfx_buffer = NULL;
 static int tgfx_width = 0;
 static int tgfx_height = 0;
-static SPRITE *screenBuffer = NULL;
+SPRITE *screenBuffer = NULL;
 
 SPRITE *createSprite(int x, int y, int w, int h) {
   SPRITE *spt = malloc(sizeof(SPRITE));
@@ -33,6 +33,9 @@ void tgfx_fb_init(int w, int h) {
   screenBuffer = createSprite(0, 0, w, h);
 }
 
+// Remember: Create a dynamic table for sprites!!
+//void kill_sprite(){}
+
 void tgfx_fb_quit(){
   if(!screenBuffer) return;
   for(int i = 0; i < tgfx_height; i++)
@@ -43,9 +46,44 @@ void tgfx_fb_quit(){
   screenBuffer = NULL;
 }
 
-void tgfx_fb_fill(char v){
-  for(int i = 0; i < tgfx_height; i++) 
-    memset(screenBuffer->img[i], v, tgfx_width);
+void sprite_fill(SPRITE *p, char v) {
+  for(int i = 0; i < p->h; i++) memset(p->img[i], v, p->w);
+}
+
+// Just like in pygame, when blitting an image onto another
+// we use the destination's local coordinates and not the global ones!!
+void sprite_blit(SPRITE *src, SPRITE*dest){
+
+  // Under these circumstances, do not blit to dest!
+  if(src->x + src->w < 0 || src->x > dest->w)
+    return;
+  
+  if(src->y + src->h < 0 || src->y > dest->h)
+    return;
+
+ 
+  // Destination coordinates
+  int px = (src->x < 0)? 0 : src->x;
+  int py = (src->y < 0)? 0 : src->y;
+
+
+  // Array indexing coordinates for src
+  int sx = (src->x < 0)? -src->x : 0;
+  int sy = (src->y < 0)? -src->y : 0;
+
+  int w = src->w - sx;
+  int h = src->h - sy;
+
+  if(px + w > dest->w)
+    w = dest->w - px;
+  if (py + h > dest->h)
+    h = dest->h - py;
+
+  // Blit process
+  for(int i = 0; i < h; i++){
+    memcpy(dest->img[i+py]+px, src->img[i+sy]+sx, w);
+  }
+
 }
 
 void tgfx_fb_put(int x, int y, char c){
@@ -63,24 +101,21 @@ void tgfx_fb_print(int x, int y, const char *s) {
     }
 }
 
-void tgfx_fb_box(){
-  memset(screenBuffer->img[0], '-', tgfx_width);
-  memset(screenBuffer->img[tgfx_height-1], '-', tgfx_width);
-  for(int i = 1; i < tgfx_height - 1; i++){
-    screenBuffer->img[i][0] = screenBuffer->img[i][tgfx_width-1] = '|'; 
+void create_box(SPRITE *p){
+  memset(p->img[0], '-', p->w);
+  memset(p->img[p->h-1], '-', p->w);
+  for(int i = 1; i < p->h - 1; i++){
+    p->img[i][0] = p->img[i][p->w-1] = '|'; 
   }
-  screenBuffer->img[0][0] = '+';
-  screenBuffer->img[0][tgfx_width-1] = '+';
 
-  screenBuffer->img[tgfx_height-1][0] = '+';
-  screenBuffer->img[tgfx_height-1][tgfx_width-1] = '+';
+  /* Adding corners */
+  p->img[0][0] = '+';
+  p->img[0][p->w-1] = '+';
+  p->img[p->h-1][0] = '+';
+  p->img[p->h-1][p->w-1] = '+';
 }
 
 void tgfx_fb_render(){
-  tgfx_mv_savedpos();
-  tgfx_clfpos();
-  tgfx_mv_savedpos();
-
   for (int i = 0; i < tgfx_height; i++){
     write(STDOUT_FILENO, screenBuffer->img[i], tgfx_width);
     putchar('\n');

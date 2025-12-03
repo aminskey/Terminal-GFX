@@ -13,7 +13,9 @@
 #define TGFX_KEY_RIGHT  1004
 
 // getting window size
-#define tgfx_wsize wsize()
+
+extern struct winsize tgfx_w;
+
 
 typedef struct {
   int x;
@@ -23,6 +25,7 @@ typedef struct {
   char **img;
 } SPRITE;
 
+extern SPRITE *screenBuffer;
 
 // Initialization & Shutdown
 void tgfx_settings_init();
@@ -36,7 +39,7 @@ void tgfx_nocbreak();
 // Drawing & Screen Control
 #define tgfx_cls()               printf("\x1b[2J")
 #define tgfx_clfpos()            printf("\x1b[J")
-#define tgfx_move_cursor(y,x)    printf("\x1b[%d;%dH", (y), (x))
+#define tgfx_move_cursor(x,y)    printf("\x1b[%d;%dH", (y), (x))
 #define tgfx_toggleCursor(on)    ((on) ? printf("\x1b[?25h") : printf("\x1b[?25l"))
 #define tgfx_save_pos()          printf("\x1b[s")
 #define tgfx_mv_savedpos()       printf("\x1b[u")
@@ -49,16 +52,23 @@ void tgfx_startInput();
 void tgfx_closeInput();
 void tgfx_input_init();
 void tgfx_input_terminate();
-int  tgfx_readInput(int);
+int  tgfx_readInput(int hold); // hold key down if hold=1 
 
 // Frame buffer
 void tgfx_fb_init(int, int);
 void tgfx_fb_quit();
-void tgfx_fb_clear(char);
 void tgfx_fb_put(int, int, char);
 void tgfx_fb_print(int, int, const char *);
 void tgfx_fb_render();
-void tgfx_fb_box();
+void create_box(SPRITE*);
+
+#define tgfx_fb_box() create_box(screenBuffer)
+
+
+// Sprite Code
+SPRITE *createSprite(int, int, int, int);
+void sprite_fill(SPRITE*, char);
+void sprite_blit(SPRITE*, SPRITE*);
 
 char *utf8string(uint32_t);
 

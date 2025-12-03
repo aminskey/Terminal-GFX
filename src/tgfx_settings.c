@@ -11,7 +11,7 @@
 
 // Terminal settings and input variables
 static struct termios tgfx_oldt;
-static struct winsize tgfx_w;
+struct winsize tgfx_w;
 
 // predefining handle_sigint
 static void handle_sigint(int sig);
@@ -44,9 +44,8 @@ void tgfx_nocbreak(){
 
 
 void handle_sigint(int sig) {
-    tgfx_terminate();
-    tgfx_mv_savedpos();
-    tgfx_clfpos();
+  tgfx_terminate();
+  tgfx_cls();
 	printf("\nExiting due to signal: %d\n", sig);
 	exit(EXIT_SUCCESS);
 }
@@ -58,5 +57,3 @@ void tgfx_settings_init(){
   tgfx_cbreak();                              // start with cbreak and hide the cursor
   tgfx_toggleCursor(false);
 }
-
-struct winsize wsize(){return tgfx_w;}

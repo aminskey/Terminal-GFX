@@ -10,8 +10,8 @@
 #include<string.h>
 
 static pthread_mutex_t inputLock;
-static volatile int tgfx_key = 0;
-static volatile int running = 0;
+static int tgfx_key = 0;
+static int running = 0;
 
 static void *inputThread(void *arg){
   while(running){
