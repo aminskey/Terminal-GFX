@@ -60,12 +60,13 @@ void tgfx_fb_quit(){
 
 
 void sprite_fill_color(SPRITE *p, char v, char*fg, char*bg) {
+  CELL exampleCell;
+  exampleCell.c = v;
+  memcpy(exampleCell.fRGB, fg, 3);
+  memcpy(exampleCell.bRGB, bg, 3);
+
   for(int i = 0; i < p->h; i++){
-    for(int j = 0; j < p->w; j++){
-      p->img[i][j].c = v;
-      memcpy(p->img[i][j].fRGB, fg, 3);
-      memcpy(p->img[i][j].bRGB, bg, 3);
-    }
+    memcpy(p->img[i], &exampleCell, p->w-1);
   }
 }
 

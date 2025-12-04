@@ -8,7 +8,7 @@ int main(void){
   tgfx_startInput();
 
   // Don't flush the screen!
-  tgfx_do_flush = 0;
+  //tgfx_do_flush = 0;
 
   tgfx_fb_init(80, 20);
   if(!screenBuffer){
