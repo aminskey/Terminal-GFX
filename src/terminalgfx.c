@@ -10,5 +10,7 @@ void tgfx_terminate(){
   tgfx_input_terminate();
   tgfx_fb_quit();
   tgfx_nocbreak();
+  tgfx_move_cursor(0, 0);
+  tgfx_clfpos();
   tgfx_mv_savedpos();
 }

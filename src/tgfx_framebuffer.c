@@ -12,6 +12,7 @@ SPRITE *screenBuffer = NULL;
 
 char WHITE[]={255, 255, 255};
 char BLACK[]={0, 0, 0};
+int tgfx_do_flush = 1;
 
 SPRITE *createSprite(int x, int y, int w, int h) {
   SPRITE *spt = malloc(sizeof(SPRITE));
@@ -140,8 +141,8 @@ void tgfx_fb_render(){
 
   for (int i = 0; i < tgfx_height; i++){
     for(int k = 0; k < tgfx_width; k++){
-      char *fg = screenBuffer->img[i][k].fRGB;
-      char *bg = screenBuffer->img[i][k].bRGB;
+      unsigned char *fg = screenBuffer->img[i][k].fRGB;
+      unsigned char *bg = screenBuffer->img[i][k].bRGB;
 
       printf("\x1b[38;2;%d;%d;%dm", fg[0], fg[1], fg[2]);
       printf("\x1b[48;2;%d;%d;%dm", bg[0], bg[1], bg[2]);
@@ -149,7 +150,7 @@ void tgfx_fb_render(){
       printf("\x1b[0m");
     }
     putchar('\n');
-    fflush(stdout);
+    if(tgfx_do_flush) fflush(stdout);
     /*
      *///tgfx_move_cursor(screenBuffer->x, screenBuffer->y+i);
   }

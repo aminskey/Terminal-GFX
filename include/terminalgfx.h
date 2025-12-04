@@ -24,8 +24,8 @@ extern struct winsize tgfx_w;
 
 typedef struct {
   char c;
-  char fRGB[3];
-  char bRGB[3];
+  unsigned char fRGB[3];
+  unsigned char bRGB[3];
 } CELL;
 
 typedef struct {
@@ -38,6 +38,8 @@ typedef struct {
 
 extern SPRITE *screenBuffer;
 
+extern int tgfx_do_flush;
+
 // Initialization & Shutdown
 void tgfx_settings_init();
 void tgfx_init();
@@ -46,7 +48,6 @@ void tgfx_terminate();
 // Terminal Mode Control
 void tgfx_cbreak();
 void tgfx_nocbreak();
-
 // Drawing & Screen Control
 #define tgfx_cls()                printf("\x1b[2J")
 #define tgfx_clfpos()             printf("\x1b[J")

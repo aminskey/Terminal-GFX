@@ -13,7 +13,6 @@ double getTime(){
 
 int main() {
   tgfx_init();
-  tgfx_disable_scrolling();
   tgfx_startInput();
 
   tgfx_fb_init(tgfx_w.ws_col, tgfx_w.ws_row-4);
@@ -75,7 +74,6 @@ int main() {
     tgfx_tick(60);
 
   }
-  tgfx_enable_scrolling();
   tgfx_terminate();
   return 0;
 }
