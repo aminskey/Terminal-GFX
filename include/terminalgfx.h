@@ -19,13 +19,14 @@ extern char BLACK[3];
 #define TGFX_COL_BLACK BLACK
 
 // getting window size
-
 extern struct winsize tgfx_w;
 
 typedef struct {
   char c;
+  char glyph[5];  // 4 for UTF8 and 1 for \0
   unsigned char fRGB[3];
   unsigned char bRGB[3];
+  char glyph_len;
 } CELL;
 
 typedef struct {
@@ -71,7 +72,7 @@ int  tgfx_readInput(int hold); // hold key down if hold=1
 // Frame buffer
 void tgfx_fb_init(int, int);
 void tgfx_fb_quit();
-void tgfx_fb_put(int, int, char);
+void tgfx_fb_put(int, int, char*);
 void tgfx_fb_print(int, int, const char *);
 void tgfx_fb_render();
 void create_box(SPRITE*);
@@ -81,7 +82,7 @@ void create_box(SPRITE*);
 
 // Sprite Code
 SPRITE *createSprite(int, int, int, int);
-void sprite_fill_color(SPRITE*, char, char*, char*);
+void sprite_fill_color(SPRITE*, char*, char*, char*);
 
 #define sprite_fill(p, v) sprite_fill_color(p, v, WHITE, BLACK)
 

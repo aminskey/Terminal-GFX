@@ -19,9 +19,9 @@ int main(void){
   for(int i = 0; i < screenBuffer->h; i++){
     for(int j = 0; j < screenBuffer->w; j++){
       unsigned char *c = screenBuffer->img[i][j].bRGB;
-      c[0] = (rand()%100) + 155;
-      c[1] = (rand()%100) + 155;
-      c[2] = (rand()%100) + 155;
+      c[0] = (rand()%255);
+      c[1] = (rand()%255);
+      c[2] = (rand()%255);
 
       memcpy(screenBuffer->img[i][j].bRGB, c, 3);
     }

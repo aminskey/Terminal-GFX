@@ -28,7 +28,7 @@ int main() {
 //  tgfx_fb_print(3, 4, (char*)utf8string(0x1f30d));
   int running=1;
   SPRITE *bx = createSprite(10, 10, 10, 10);
-  sprite_fill_color(bx, ' ', TGFX_COL_WHITE, blue);
+  sprite_fill_color(bx, " ", TGFX_COL_WHITE, blue);
   create_box(bx); 
 
   double lastTime = getTime();
@@ -64,7 +64,7 @@ int main() {
     bx->y = (int)y;
 
     // Drawing on screen buffer
-    sprite_fill(screenBuffer, ' ');
+    sprite_fill(screenBuffer, " ");
     tgfx_fb_print(4, 4, "H␂ello, World");
     sprite_blit(bx, screenBuffer);
     tgfx_fb_box();
