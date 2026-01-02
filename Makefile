@@ -31,3 +31,6 @@ test: $(LIB)
 
 example: $(LIB)
 	$(CC) $(CFLAGS) -g example.c -L$(OBJDIR) -lterminalgfx -lm
+
+anim: $(LIB)
+	$(CC) $(CFLAGS) -g anim_example.c llama.c -L$(OBJDIR) -lterminalgfx

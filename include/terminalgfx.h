@@ -86,7 +86,7 @@ void sprite_fill_color(SPRITE*, char*, char*, char*);
 
 #define sprite_fill(p, v) sprite_fill_color(p, v, WHITE, BLACK)
 
-void sprite_blit(SPRITE*, SPRITE*);
+void sprite_blit(SPRITE *src, SPRITE *dst);
 
 char *utf8string(uint32_t);
 
