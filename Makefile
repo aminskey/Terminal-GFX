@@ -30,4 +30,4 @@ test: $(LIB)
 	$(CC) $(CFLAGS) -g $(TEST_SRC) -L$(OBJDIR) -lterminalgfx -o $(TEST_BIN)
 
 example: $(LIB)
-	$(CC) $(CFLAGS) -g example.c -L$(OBJDIR) -lterminalgfx
+	$(CC) $(CFLAGS) -g example.c -L$(OBJDIR) -lterminalgfx -lm

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <terminalgfx.h>
+#include <math.h>
 
 int main(void){
   tgfx_init();
@@ -16,14 +17,24 @@ int main(void){
     return 0;
   }
 
+  sprite_fill(screenBuffer, "▀");
+
   for(int i = 0; i < screenBuffer->h; i++){
     for(int j = 0; j < screenBuffer->w; j++){
-      unsigned char *c = screenBuffer->img[i][j].bRGB;
-      c[0] = (rand()%255);
-      c[1] = (rand()%255);
-      c[2] = (rand()%255);
+      unsigned char *c1 = screenBuffer->img[i][j].bRGB;
+      unsigned char *c2 = screenBuffer->img[i][j].fRGB;
 
-      memcpy(screenBuffer->img[i][j].bRGB, c, 3);
+      
+      c1[0] = (char)(127.0 * sin(i)) + 255;//(char)rand()%255;
+      c1[1] = (char)(127.0 * sin(i)) + 255;
+      c1[2] = (char)(127.0 * sin(i)) + 255;
+      
+      c2[0] = (char)(127.0 * cos(j)) + 255; //(char)rand()%255;
+      c2[1] = (char)(127.0 * cos(j)) + 255;//(char)rand()%255;
+      c2[2] = (char)(127.0 * cos(j)) + 255;//(char)rand()%255;
+
+      memcpy(screenBuffer->img[i][j].bRGB, c1, 3);
+      memcpy(screenBuffer->img[i][j].fRGB, c2, 3);
     }
   }
 
