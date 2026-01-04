@@ -126,22 +126,22 @@ void sprite_blit(SPRITE *src, SPRITE*dest){
 
 }
 
-void tgfx_fb_put(int x, int y, char *c){
+void sprite_put(SPRITE *s, int x, int y, char *c){
   // in case the coordinates are out of bounds
-  if (x < 0 || x >= tgfx_width || y < 0 || y >= tgfx_height) 
+  if (x < 0 || x >= s->w || y < 0 || y >= s->h) 
     return;
-  cell_set_glyph(&screenBuffer->img[y][x], c, utf8_length((unsigned char)c[0]));
+  cell_set_glyph(&s->img[y][x], c, utf8_length((unsigned char)c[0]));
 }
 
-void tgfx_fb_print(int x, int y, const char *s) { // refactor to strcpy 
+void sprite_print(SPRITE *sp, int x, int y, const char *s) { // refactor to strcpy 
     int i = 0;
     int cx = x;
-    while (s[i] && cx < tgfx_width) {
+    while (s[i] && cx < sp->w) {
         int len = utf8_length((unsigned char)s[i]);
         //memcpy(screenBuffer->img[y][cx].glyph, &s[i], len);
         //screenBuffer->img[y][cx].glyph[len+1] = '\0';
 
-        cell_set_glyph(&screenBuffer->img[y][cx], &s[i], len);
+        cell_set_glyph(&sp->img[y][cx], &s[i], len);
 
         i += len;
         cx++;

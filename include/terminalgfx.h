@@ -57,7 +57,8 @@ void tgfx_nocbreak();
 #define tgfx_save_pos()           printf("\x1b[s")
 #define tgfx_mv_savedpos()        printf("\x1b[u")
 #define tgfx_disable_scrolling()  printf("\x1b[1;%dr", tgfx_w.ws_row+20)
-#define tgfx_enable_scrolling()   printf("\x1b[r");
+#define tgfx_enable_scrolling()   printf("\x1b[r")
+#define tgfx_altbuff(on)          ((on) ? printf("\x1b[?1049h") : printf("\x1b[1049l"))
 
 // Timing
 void tgfx_tick(int);
@@ -72,8 +73,6 @@ int  tgfx_readInput(int hold); // hold key down if hold=1
 // Frame buffer
 void tgfx_fb_init(int, int);
 void tgfx_fb_quit();
-void tgfx_fb_put(int, int, char*);
-void tgfx_fb_print(int, int, const char *);
 void tgfx_fb_render();
 void create_box(SPRITE*);
 
@@ -83,12 +82,13 @@ void create_box(SPRITE*);
 // Sprite Code
 SPRITE *createSprite(int, int, int, int);
 void sprite_fill_color(SPRITE*, char*, char*, char*);
-
-#define sprite_fill(p, v) sprite_fill_color(p, v, WHITE, BLACK)
-
+void sprite_put(SPRITE*, int, int, char*);
+void sprite_print(SPRITE*, int, int, const char *);
 void sprite_blit(SPRITE *src, SPRITE *dst);
 
-char *utf8string(uint32_t);
+#define sprite_fill(p, v)       sprite_fill_color(p, v, WHITE, BLACK)
+#define tgfx_fb_put(i, j, s)    sprite_put(screenBuffer, i, j, s)
+#define tgfx_fb_print(i, j, s)  sprite_print(screenBuffer, i, j, s)
 
 #endif // TERMINALGFX_H
 
