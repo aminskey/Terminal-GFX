@@ -20,11 +20,8 @@ HLIB = include/terminalgfx.h
 all: $(LIB)
 shared: $(SLIB)
 install: 
-	sudo cp $(SLIB) $(ILIB)
 	sudo cp $(HLIB) $(CLIB)
-	echo "Changing permissions for lib"
-	sudo chmod 0755 $(ILIB)
-	sudo ldconfig
+	sudo ldconfig -n $(SODIR)
 
 $(SLIB): $(S_OBJ)
 	gcc -shared -o $@ $^
