@@ -18,7 +18,7 @@ int tgfx_do_flush = 1;
 
 static int utf8_length(unsigned char c) { 
   // we look at the MSB which is kept in the first 8 bits
-  // The logic behind UTF-8 Characters is documented in https://datatracker.ietf.org/doc/html/rfc3629
+  // The logic behind UTF-8 Characters is documented in section 3 of https://datatracker.ietf.org/doc/html/rfc3629
   if((c & 0x80) == 0x00) return 1;
   if((c & 0xE0) == 0xC0) return 2;
   if((c & 0xF0) == 0xE0) return 3;

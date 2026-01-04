@@ -11,7 +11,7 @@ LIB = $(OBJDIR)/libterminalgfx.a
 TEST_SRC = hello.c
 TEST_BIN = hello
 
-.PHONY: all clean test
+.PHONY: all clean
 
 all: $(LIB)
 
@@ -25,12 +25,8 @@ $(OBJDIR)/%.o: src/%.c
 clean:
 	rm -f $(OBJ) $(LIB) $(TEST_BIN)
 
-# Test target
-test: $(LIB)
-	$(CC) $(CFLAGS) -g $(TEST_SRC) -L$(OBJDIR) -lterminalgfx -o $(TEST_BIN)
-
-example: $(LIB)
-	$(CC) $(CFLAGS) -g example.c -L$(OBJDIR) -lterminalgfx -lm
-
-anim: $(LIB)
-	$(CC) $(CFLAGS) -g anim_example.c llama.c -L$(OBJDIR) -lterminalgfx
+# examples
+examples: $(LIB)
+	$(CC) $(CFLAGS) -g examples/colourful.c -L$(OBJDIR) -lterminalgfx -lm -o bin/colourful
+	$(CC) $(CFLAGS) -g examples/hello.c -L$(OBJDIR) -lterminalgfx -lm -o bin/hello
+	$(CC) $(CFLAGS) -g examples/anim_example.c examples/llama.c -L$(OBJDIR) -lterminalgfx -lm -o bin/animatedLlama
