@@ -44,7 +44,7 @@ void tgfx_nocbreak(){
 
 void handle_sigint(int sig) {
   tgfx_terminate();
-  tgfx_cls();
+  tgfx_altbuff(0);
 	printf("\nExiting due to signal: %d\n", sig);
 	exit(EXIT_SUCCESS);
 }

@@ -26,6 +26,7 @@ typedef struct {
   char glyph[5];  // 4 for UTF8 and 1 for \0
   unsigned char fRGB[3];
   unsigned char bRGB[3];
+  char alpha;
   char glyph_len;
 } CELL;
 
@@ -58,7 +59,7 @@ void tgfx_nocbreak();
 #define tgfx_mv_savedpos()        printf("\x1b[u")
 #define tgfx_disable_scrolling()  printf("\x1b[1;%dr", tgfx_w.ws_row+20)
 #define tgfx_enable_scrolling()   printf("\x1b[r")
-#define tgfx_altbuff(on)          ((on) ? printf("\x1b[?1049h") : printf("\x1b[1049l"))
+#define tgfx_altbuff(on)          ((on) ? printf("\x1b[?1049h") : printf("\x1b[?1049l"))
 
 // Timing
 void tgfx_tick(int);
@@ -85,6 +86,7 @@ void sprite_fill_color(SPRITE*, char*, char*, char*);
 void sprite_put(SPRITE*, int, int, char*);
 void sprite_print(SPRITE*, int, int, const char *);
 void sprite_blit(SPRITE *src, SPRITE *dst);
+void kill_sprite(SPRITE **p);
 
 #define sprite_fill(p, v)       sprite_fill_color(p, v, WHITE, BLACK)
 #define tgfx_fb_put(i, j, s)    sprite_put(screenBuffer, i, j, s)

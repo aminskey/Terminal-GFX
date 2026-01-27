@@ -21,7 +21,9 @@ all: $(LIB)
 shared: $(SLIB)
 install: 
 	sudo cp $(HLIB) $(CLIB)
-	sudo ldconfig -n $(SODIR)
+	sudo cp $(SLIB) $(ILIB)
+	sudo chmod 0755 $(ILIB)
+	sudo ldconfig
 
 $(SLIB): $(S_OBJ)
 	gcc -shared -o $@ $^

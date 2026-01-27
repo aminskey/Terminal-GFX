@@ -30,7 +30,7 @@ static void cell_set_glyph(CELL *c, const char *s, int len){
   if(len >= UTF8_MAX) len = UTF8_MAX - 1;
   memcpy(c->glyph, s, len);
   c->glyph[len] = '\0';
-  c->glyph_len = len;
+  c->glyph_len = len;   // Remember to remove this
 } 
 
 SPRITE *createSprite(int x, int y, int w, int h) {
@@ -42,6 +42,7 @@ SPRITE *createSprite(int x, int y, int w, int h) {
       cell_set_glyph(&spt->img[i][j], " ", 1);
       memcpy(spt->img[i][j].fRGB, WHITE, 3);
       memcpy(spt->img[i][j].bRGB, BLACK, 3);
+      spt->img[i][j].alpha = 1;
     }
   }
 
@@ -183,8 +184,10 @@ void tgfx_fb_render(){
       unsigned char *fg = screenBuffer->img[i][k].fRGB;
       unsigned char *bg = screenBuffer->img[i][k].bRGB;
 
+      //if(screenBuffer->img[i][k].alpha > 0){
       printf("\x1b[38;2;%d;%d;%dm", fg[0], fg[1], fg[2]);
       printf("\x1b[48;2;%d;%d;%dm", bg[0], bg[1], bg[2]);
+      //}
       printf("%s", screenBuffer->img[i][k].glyph);       // change to puts
       printf("\x1b[0m");
     }
