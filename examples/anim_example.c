@@ -13,9 +13,11 @@ extern const uint32_t llama_data[6][2304];
 #define MAX_INDEX LLAMA_FRAME_WIDTH * LLAMA_FRAME_HEIGHT
 
 void extract_rgb(uint32_t inp, unsigned char *col){
-  col[1] = (inp >> 16) & 0xff;
-  col[2] = (inp >> 8) & 0xff;
-  col[0] = inp & 0xff;
+  // The 32_bit number is saved in the ABGR format
+
+  col[2] = (inp >> 16) & 0xff;  // blue
+  col[1] = (inp >> 8) & 0xff;   // green
+  col[0] = inp & 0xff;          // red
 }
 
 void draw_frame(SPRITE *s, const uint32_t *frame){
@@ -30,7 +32,7 @@ void draw_frame(SPRITE *s, const uint32_t *frame){
     CELL c = s->img[y][x];
     extract_rgb(frame[i], c.fRGB);
 
-    if((i + 48) < MAX_INDEX){
+    if((i + 48) < MAX_INDEX - 1){
       extract_rgb(frame[i + 48], c.bRGB);
     }
     s->img[y][x] = c;
