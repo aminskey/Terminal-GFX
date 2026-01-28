@@ -15,9 +15,16 @@ static int tgfx_width = 0;
 static int tgfx_height = 0;
 SPRITE *screenBuffer = NULL;
 
-short WHITE[]={255, 255, 255};
-short BLACK[]={0, 0, 0};
+short WHITE[3]={255, 255, 255};
+short BLACK[3]={0, 0, 0};
+short TRANS[3]={-1, -1, -1};
 int tgfx_do_flush = 1;
+
+static void colorBound(short *col, int low, int high){
+  for(int i = 0; i < 3; i++){
+    col[i] = boundLow(boundUp(col[i], high), low);
+  }
+}
 
 static int utf8_length(unsigned char c) { 
   // we look at the MSB which is kept in the first 8 bits
@@ -57,13 +64,11 @@ SPRITE *createSprite(int x, int y, int w, int h) {
 }
 
 int colorCompare(short *a, short *b){
-  int diffSum = 0;
-  for(int i = 0; i < 3; i++){
-    int diff = a[i] - b[i];
-    diffSum += diff * diff;
-  }
+  int cnt = 0;
+  for(int i = 0; i < 3; i++)
+    if(a[i] != b[i]) cnt++;
 
-  return diffSum/3;
+  return cnt < 1;
 }
 
 void tgfx_fb_init(int w, int h) {
@@ -134,11 +139,18 @@ void sprite_blit(SPRITE *src, SPRITE*dest){
 
   // Blit process
   for(int i = 0; i < h; i++){
-    memcpy(dest->img[i+py]+px, src->img[i+sy]+sx, sizeof(CELL)*w);
-    //for(int j = 0; j < w; j++){
-    //  if (src->img[i+sy][sx+j]...) // fix me later.
-    //  dest->img[i+py][px+j] = src->img[i+sy][sx+j];
-    //}
+    //memcpy(dest->img[i+py]+px, src->img[i+sy]+sx, sizeof(CELL)*w);
+    for(int j = 0; j < w; j++){
+      
+      if(colorCompare(src->img[i+sy][sx+j].fRGB, TRANS))
+        memcpy(src->img[i+sy][sx+j].fRGB, dest->img[i+py][px+j].fRGB, 3*sizeof(short));
+      
+      if(colorCompare(src->img[i+sy][sx+j].bRGB, TRANS))
+        memcpy(src->img[i+sy][sx+j].bRGB, dest->img[i+py][px+j].bRGB, 3*sizeof(short));
+
+       // fix me later.
+      dest->img[i+py][px+j] = src->img[i+sy][sx+j];
+    }
   }
 
 }
@@ -200,9 +212,12 @@ void tgfx_fb_render(){
       short *fg = screenBuffer->img[i][k].fRGB;
       short *bg = screenBuffer->img[i][k].bRGB;
 
+      colorBound(fg, 0, 255);
+      colorBound(bg, 0, 255);
+
       //if(screenBuffer->img[i][k].alpha > 0){
-      printf("\x1b[38;2;%d;%d;%dm", boundUp(fg[0], 255), boundUp(fg[1], 255), boundUp(fg[2], 255));
-      printf("\x1b[48;2;%d;%d;%dm", boundUp(bg[0], 255), boundUp(bg[1], 255), boundUp(bg[2], 255));
+      printf("\x1b[38;2;%d;%d;%dm", fg[0], fg[1], fg[2]);
+      printf("\x1b[48;2;%d;%d;%dm", bg[0], bg[1], bg[2]);
       //}
       printf("%s", screenBuffer->img[i][k].glyph);       // change to puts
       printf("\x1b[0m");

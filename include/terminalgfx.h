@@ -83,8 +83,10 @@ SPRITE *createSprite(int, int, int, int);
 void sprite_fill_color(SPRITE*, char*, short*, short*);
 void sprite_put(SPRITE*, int, int, char*);
 void sprite_print(SPRITE*, int, int, const char *);
-void sprite_blit(SPRITE *src, SPRITE *dst);
-void kill_sprite(SPRITE **p);
+void sprite_blit(SPRITE *, SPRITE *);
+void kill_sprite(SPRITE **);
+int colorCompare(short *, short*);
+
 
 #define sprite_fill(p, v)       sprite_fill_color(p, v, WHITE, BLACK)
 #define tgfx_fb_put(i, j, s)    sprite_put(screenBuffer, i, j, s)
