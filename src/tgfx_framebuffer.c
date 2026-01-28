@@ -7,13 +7,16 @@
 
 #define UTF8_MAX 5
 
+#define boundUp(a,b)    (a > b)? b : a
+#define boundLow(a,b)   (a < b)? b : a
+
 //static char **tgfx_buffer = NULL;
 static int tgfx_width = 0;
 static int tgfx_height = 0;
 SPRITE *screenBuffer = NULL;
 
-char WHITE[]={255, 255, 255};
-char BLACK[]={0, 0, 0};
+short WHITE[]={255, 255, 255};
+short BLACK[]={0, 0, 0};
 int tgfx_do_flush = 1;
 
 static int utf8_length(unsigned char c) { 
@@ -30,7 +33,6 @@ static void cell_set_glyph(CELL *c, const char *s, int len){
   if(len >= UTF8_MAX) len = UTF8_MAX - 1;
   memcpy(c->glyph, s, len);
   c->glyph[len] = '\0';
-  c->glyph_len = len;   // Remember to remove this
 } 
 
 SPRITE *createSprite(int x, int y, int w, int h) {
@@ -40,9 +42,9 @@ SPRITE *createSprite(int x, int y, int w, int h) {
     spt->img[i] = malloc(w * sizeof(CELL));
     for(int j = 0; j < w; j++){
       cell_set_glyph(&spt->img[i][j], " ", 1);
-      memcpy(spt->img[i][j].fRGB, WHITE, 3);
-      memcpy(spt->img[i][j].bRGB, BLACK, 3);
-      spt->img[i][j].alpha = 1;
+      memcpy(spt->img[i][j].fRGB, WHITE, 3*sizeof(short));
+      memcpy(spt->img[i][j].bRGB, BLACK, 3*sizeof(short));
+      //spt->img[i][j].trans = 0;
     }
   }
 
@@ -52,6 +54,16 @@ SPRITE *createSprite(int x, int y, int w, int h) {
   spt->h = h;
 
   return spt;
+}
+
+int colorCompare(short *a, short *b){
+  int diffSum = 0;
+  for(int i = 0; i < 3; i++){
+    int diff = a[i] - b[i];
+    diffSum += diff * diff;
+  }
+
+  return diffSum/3;
 }
 
 void tgfx_fb_init(int w, int h) {
@@ -79,11 +91,11 @@ void tgfx_fb_quit(){
 }
 
 
-void sprite_fill_color(SPRITE *p, char *v, char*fg, char*bg) {
+void sprite_fill_color(SPRITE *p, char *v, short *fg, short *bg) {
   CELL exampleCell;
   cell_set_glyph(&exampleCell, v, utf8_length((unsigned char)v[0]));
-  memcpy(exampleCell.fRGB, fg, 3);
-  memcpy(exampleCell.bRGB, bg, 3);
+  memcpy(exampleCell.fRGB, fg, 3*sizeof(short));
+  memcpy(exampleCell.bRGB, bg, 3*sizeof(short));
 
   for(int i = 0; i < p->h; i++){
     for (int j = 0; j < p->w; j++)
@@ -123,6 +135,10 @@ void sprite_blit(SPRITE *src, SPRITE*dest){
   // Blit process
   for(int i = 0; i < h; i++){
     memcpy(dest->img[i+py]+px, src->img[i+sy]+sx, sizeof(CELL)*w);
+    //for(int j = 0; j < w; j++){
+    //  if (src->img[i+sy][sx+j]...) // fix me later.
+    //  dest->img[i+py][px+j] = src->img[i+sy][sx+j];
+    //}
   }
 
 }
@@ -181,12 +197,12 @@ void tgfx_fb_render(){
 
   for (int i = 0; i < tgfx_height; i++){
     for(int k = 0; k < tgfx_width; k++){
-      unsigned char *fg = screenBuffer->img[i][k].fRGB;
-      unsigned char *bg = screenBuffer->img[i][k].bRGB;
+      short *fg = screenBuffer->img[i][k].fRGB;
+      short *bg = screenBuffer->img[i][k].bRGB;
 
       //if(screenBuffer->img[i][k].alpha > 0){
-      printf("\x1b[38;2;%d;%d;%dm", fg[0], fg[1], fg[2]);
-      printf("\x1b[48;2;%d;%d;%dm", bg[0], bg[1], bg[2]);
+      printf("\x1b[38;2;%d;%d;%dm", boundUp(fg[0], 255), boundUp(fg[1], 255), boundUp(fg[2], 255));
+      printf("\x1b[48;2;%d;%d;%dm", boundUp(bg[0], 255), boundUp(bg[1], 255), boundUp(bg[2], 255));
       //}
       printf("%s", screenBuffer->img[i][k].glyph);       // change to puts
       printf("\x1b[0m");

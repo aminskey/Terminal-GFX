@@ -12,7 +12,7 @@ extern const uint32_t llama_data[6][2304];
 
 #define MAX_INDEX LLAMA_FRAME_WIDTH * LLAMA_FRAME_HEIGHT
 
-void extract_rgb(uint32_t inp, unsigned char *col){
+void extract_rgb(uint32_t inp, short *col){
   // The 32_bit number is saved in the ABGR format
 
   col[2] = (inp >> 16) & 0xff;  // blue

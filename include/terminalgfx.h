@@ -11,8 +11,8 @@
 #define TGFX_KEY_LEFT   1003
 #define TGFX_KEY_RIGHT  1004
 
-extern char WHITE[3];
-extern char BLACK[3];
+extern short WHITE[3];
+extern short BLACK[3];
 
 // defining colors
 #define TGFX_COL_WHITE WHITE
@@ -24,10 +24,8 @@ extern struct winsize tgfx_w;
 typedef struct {
   char c;
   char glyph[5];  // 4 for UTF8 and 1 for \0
-  unsigned char fRGB[3];
-  unsigned char bRGB[3];
-  char alpha;
-  char glyph_len;
+  short fRGB[3];
+  short bRGB[3];
 } CELL;
 
 typedef struct {
@@ -82,7 +80,7 @@ void create_box(SPRITE*);
 
 // Sprite Code
 SPRITE *createSprite(int, int, int, int);
-void sprite_fill_color(SPRITE*, char*, char*, char*);
+void sprite_fill_color(SPRITE*, char*, short*, short*);
 void sprite_put(SPRITE*, int, int, char*);
 void sprite_print(SPRITE*, int, int, const char *);
 void sprite_blit(SPRITE *src, SPRITE *dst);

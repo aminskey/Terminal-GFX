@@ -21,7 +21,7 @@ int main() {
     return -1;
   }
 
-  char blue[3] = {100, 100, 255};
+  short blue[3] = {100, 100, 255};
 
   //getchar();
 
@@ -65,7 +65,7 @@ int main() {
 
     // Drawing on screen buffer
     sprite_fill(screenBuffer, " ");
-    tgfx_fb_print(4, 4, "H␂ello, World");
+    tgfx_fb_print(4, 4, "Hello, World \xf0\x9f\x8c\x8e");
     sprite_blit(bx, screenBuffer);
     tgfx_fb_box();
     // clearing and blitting screen buffer

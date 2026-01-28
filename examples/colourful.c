@@ -25,8 +25,8 @@ int main(void){
 
   for(int i = 1; i < screenBuffer->h - 1; i++){
     for(int j = 1; j < screenBuffer->w - 1; j++){
-      unsigned char *c1 = screenBuffer->img[i][j].bRGB;
-      unsigned char *c2 = screenBuffer->img[i][j].fRGB;
+      short *c1 = screenBuffer->img[i][j].bRGB;
+      short *c2 = screenBuffer->img[i][j].fRGB;
 
       
       c1[0] = (char)(127.0 * sin(i)) + 255;//(char)rand()%255;
