@@ -83,13 +83,32 @@ void kill_sprite(SPRITE **p){
   if(!*p) return;
   SPRITE *sp = *p;
 
-  for(int i = 0; i < sp->h ; i++){
-    free(sp->img[i]);
+  if(sp->img){
+    for(int i = 0; i < sp->h ; i++){
+      free(sp->img[i]);
+      sp->img[i] = NULL;
+    }
+    free(sp->img);
+    sp->img = NULL;
   }
-  free(sp->img);
   free(sp);
   *p = NULL;
 }
+
+int spriteCollide(SPRITE *self, SPRITE *other){
+  return  (self->x + self->w >= other->x)   && 
+          (self->x <= other->x + other->w)  &&
+          (self->y + self->h >= other->y)   &&
+          (self->y <= other->y + other->h); 
+}
+
+int groupCollide(SPRITE *self, SPRITE **group, int n){
+  for (int i = 0; i < n; i++) {
+    if(spriteCollide(self, group[i])) return 1;
+  }
+  return 0;
+}
+
 
 void tgfx_fb_quit(){
   kill_sprite(&screenBuffer);
@@ -138,18 +157,28 @@ void sprite_blit(SPRITE *src, SPRITE*dest){
     h = dest->h - py;
 
   // Blit process
+  int tscore[2] = {0, 0};
   for(int i = 0; i < h; i++){
-    //memcpy(dest->img[i+py]+px, src->img[i+sy]+sx, sizeof(CELL)*w);
     for(int j = 0; j < w; j++){
-      
-      if(colorCompare(src->img[i+sy][sx+j].fRGB, TRANS))
+      if(colorCompare(src->img[i+sy][sx+j].fRGB, TRANS)){
         memcpy(src->img[i+sy][sx+j].fRGB, dest->img[i+py][px+j].fRGB, 3*sizeof(short));
-      
-      if(colorCompare(src->img[i+sy][sx+j].bRGB, TRANS))
+        tscore[0] = 1;
+      }
+
+      if(colorCompare(src->img[i+sy][sx+j].bRGB, TRANS)){
         memcpy(src->img[i+sy][sx+j].bRGB, dest->img[i+py][px+j].bRGB, 3*sizeof(short));
+        tscore[1] = 1;
+      }
 
        // fix me later.
       dest->img[i+py][px+j] = src->img[i+sy][sx+j];
+
+      // We only want to copy colours when blitting afterwards we revert
+      
+      if(tscore[0]) memcpy(src->img[i+sy][sx+j].fRGB, TRANS, 3*sizeof(short));
+      if(tscore[1]) memcpy(src->img[i+sy][sx+j].bRGB, TRANS, 3*sizeof(short));
+      
+      tscore[0] = tscore[1] = 0;
     }
   }
 

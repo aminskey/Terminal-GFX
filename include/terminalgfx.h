@@ -85,6 +85,10 @@ void sprite_put(SPRITE*, int, int, char*);
 void sprite_print(SPRITE*, int, int, const char *);
 void sprite_blit(SPRITE *, SPRITE *);
 void kill_sprite(SPRITE **);
+
+int spriteCollide(SPRITE *, SPRITE *);
+int groupCollide(SPRITE *, SPRITE **, int);
+
 int colorCompare(short *, short*);
 
 
