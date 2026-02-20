@@ -28,7 +28,7 @@ int main() {
 //  tgfx_fb_print(3, 4, (char*)utf8string(0x1f30d));
   int running=1;
   SPRITE *bx = createSprite(10, 10, 10, 10);
-  sprite_fill_color(bx, " ", TGFX_COL_WHITE, blue);
+  sprite_fill_color(bx, " ", WHITE, blue);
   create_box(bx); 
 
   double lastTime = getTime();

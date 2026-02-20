@@ -13,10 +13,10 @@
 
 extern short WHITE[3];
 extern short BLACK[3];
+extern short TRANS[3];
 
-// defining colors
-#define TGFX_COL_WHITE WHITE
-#define TGFX_COL_BLACK BLACK
+extern short BLUE[3];
+extern short CYAN[3];
 
 // getting window size
 extern struct winsize tgfx_w;
@@ -90,7 +90,7 @@ int spriteCollide(SPRITE *, SPRITE *);
 int groupCollide(SPRITE *, SPRITE **, int);
 
 int colorCompare(short *, short*);
-
+int utf8_length(unsigned char c);
 
 #define sprite_fill(p, v)       sprite_fill_color(p, v, WHITE, BLACK)
 #define tgfx_fb_put(i, j, s)    sprite_put(screenBuffer, i, j, s)

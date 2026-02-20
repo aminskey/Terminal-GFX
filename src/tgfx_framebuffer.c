@@ -11,22 +11,25 @@
 #define boundLow(a,b)   (a < b)? b : a
 
 //static char **tgfx_buffer = NULL;
-static int tgfx_width = 0;
-static int tgfx_height = 0;
+int tgfx_width = 0;
+int tgfx_height = 0;
 SPRITE *screenBuffer = NULL;
 
-short WHITE[3]={255, 255, 255};
-short BLACK[3]={0, 0, 0};
-short TRANS[3]={-1, -1, -1};
+short WHITE[3] = {255, 255, 255};
+short BLACK[3] = {0, 0, 0};
+short TRANS[3] = {-1, -1, -1};
+short BLUE[3] = {0, 0, 255};
+short CYAN[3] = {100, 100, 255};
+
 int tgfx_do_flush = 1;
 
-static void colorBound(short *col, int low, int high){
+void colorBound(short *col, int low, int high){
   for(int i = 0; i < 3; i++){
     col[i] = boundLow(boundUp(col[i], high), low);
   }
 }
 
-static int utf8_length(unsigned char c) { 
+int utf8_length(unsigned char c) { 
   // we look at the MSB which is kept in the first 8 bits
   // The logic behind UTF-8 Characters is documented in section 3 of https://datatracker.ietf.org/doc/html/rfc3629
   if((c & 0x80) == 0x00) return 1;
@@ -36,12 +39,14 @@ static int utf8_length(unsigned char c) {
   return 1;
 }
 
-static void cell_set_glyph(CELL *c, const char *s, int len){
+// We set the glyph for a given cell
+void cell_set_glyph(CELL *c, const char *s, int len){
   if(len >= UTF8_MAX) len = UTF8_MAX - 1;
   memcpy(c->glyph, s, len);
   c->glyph[len] = '\0';
 } 
 
+// We initialise a sprite and its corresponding cells
 SPRITE *createSprite(int x, int y, int w, int h) {
   SPRITE *spt = malloc(sizeof(SPRITE));
   spt->img = malloc(h * sizeof(CELL *));
@@ -63,6 +68,7 @@ SPRITE *createSprite(int x, int y, int w, int h) {
   return spt;
 }
 
+// Used for colour comparison
 int colorCompare(short *a, short *b){
   int cnt = 0;
   for(int i = 0; i < 3; i++)
@@ -71,6 +77,7 @@ int colorCompare(short *a, short *b){
   return cnt < 1;
 }
 
+// Initialising the framebuffer
 void tgfx_fb_init(int w, int h) {
   tgfx_width = w;
   tgfx_height = h;
@@ -248,7 +255,7 @@ void tgfx_fb_render(){
       printf("\x1b[38;2;%d;%d;%dm", fg[0], fg[1], fg[2]);
       printf("\x1b[48;2;%d;%d;%dm", bg[0], bg[1], bg[2]);
       //}
-      printf("%s", screenBuffer->img[i][k].glyph);       // change to puts
+      printf("%s", screenBuffer->img[i][k].glyph);
       printf("\x1b[0m");
     }
     putchar('\n');
